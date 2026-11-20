@@ -60,6 +60,16 @@ button{font-family:inherit}
 body.mk-show-tags .mk-tag{display:block}
 .mk-tag span{opacity:.8;font-weight:500}
 
+/* view controls (switches that change what a frame shows) */
+.mk-ctlbar{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:4px 0 14px}
+.mk-ctl{display:inline-flex;align-items:center;gap:10px}
+.mk-ctl-label{font:600 .8rem/1 var(--mk-body);color:var(--mk-ink2)}
+.mk-seg{display:inline-flex;border:2px solid var(--mk-accent);border-radius:999px;overflow:hidden;background:var(--mk-surface)}
+.mk-seg button{border:0;background:transparent;color:var(--mk-ink);font:600 .85rem/1 var(--mk-body);padding:8px 14px;cursor:pointer}
+.mk-seg button[aria-pressed=true]{background:var(--mk-accent);color:#fff}
+.mk-seg.sm button{font-size:12px;padding:6px 12px}
+.mk-stage .mk-seg button{font-size:calc(12*1.3333px);padding:6px 14px}
+
 /* comments: native buttons, standalone mode, pins */
 .mk-cbtn{display:none;position:absolute;top:8px;right:8px;z-index:6;border:1.5px solid var(--mk-accent);background:var(--mk-surface);color:var(--mk-ink);border-radius:999px;font:600 13px/1 var(--mk-body);padding:6px 11px;cursor:pointer}
 body.mk-native [data-comment-target]:hover>.mk-cbtn,body.mk-native [data-comment-target]:focus-within>.mk-cbtn{display:block}
@@ -164,12 +174,13 @@ window.MOCKUP = (function () {
     var c = ST[s];
     return '<span style="display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 5px;border:2px solid ' + c[2] + ';border-radius:999px;background:#fff;font-weight:600;font-size:15px;white-space:nowrap"><i style="width:20px;height:20px;border-radius:50%;background:' + c[2] + ';color:' + c[3] + ';display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:700">' + c[1] + "</i>" + c[0] + "</span>";
   }
-  function spark(w, h) {
-    var lo = 25000, hi = 62000, L = 8, R = 70, T = 10, B = 24, n = CUR.length;
+  function spark(w, h, st) {
+    var CURV = (st && st.trend === "14") ? CUR.slice(-14) : CUR;
+    var lo = 25000, hi = 62000, L = 8, R = 70, T = 10, B = 24, n = CURV.length;
     function X(i) { return L + (w - L - R) * i / (n - 1); }
     function Y(v) { return T + (h - T - B) * (1 - (v - lo) / (hi - lo)); }
-    var path = CUR.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
-    var ma = CUR.map(function (v, i) { var a = CUR.slice(Math.max(0, i - 6), i + 1); return avg(a); });
+    var path = CURV.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
+    var ma = CURV.map(function (v, i) { var a = CURV.slice(Math.max(0, i - 6), i + 1); return avg(a); });
     var mp = ma.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
     var ry = Y(prevAvg);
     return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Daily sales for 30 days with a 7-day average and the previous period average">'
@@ -205,6 +216,7 @@ window.MOCKUP = (function () {
       { title: "What is invented", html: "<p>The company, regions, products and every number. The numbers come from a small seeded generator, so they are the same on every build. In a real project this is where you put real values read from the data source.</p>" },
       { title: "Try this", html: "<p>Press <b>Comment mode</b>, click a component and write a comment. Toggle <b>Show build labels</b> to see each element's size and position. Then press <b>Finish review</b>.</p>" }
     ],
+    controls: { trend: { label: "Trend window", value: "30", options: [["30", "30 days"], ["14", "14 days"]] } },
     decisionsTitle: "Three things the reviewer decides",
     decisions: [
       "<b>Layout.</b> A keeps the KPI on top left and puts regions beside it. B gives the trend the full width. Which reads faster?",
@@ -212,18 +224,18 @@ window.MOCKUP = (function () {
       "<b>Trend window.</b> 30 days with a 7-day average. Would 90 days be more useful for this audience?"
     ],
     frames: [
-      { id: "A", eyebrow: "Variant A", title: "KPI top left, regions beside it", note: "The reader sees the answer first, then where it comes from, then the detail.", w: 1280, h: 720, bg: "#E9EEF2",
+      { id: "A", eyebrow: "Variant A", title: "KPI top left, regions beside it", controls: ["trend"], note: "The reader sees the answer first, then where it comes from, then the detail.", w: 1280, h: 720, bg: "#E9EEF2",
         components: [
           header(),
           { id: "A1", name: "KPI card", build: "Card (new) + line chart", x: 24, y: 100, w: 520, h: 300, html: function (c) { return '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:10px">' + kpiNumber + kpiGap + '</div><div style="margin-top:10px">' + chip(status) + '</div>'; } },
           { id: "A2", name: "Regions", build: "Table with data bars", x: 568, y: 100, w: 688, h: 300, html: function () { return vt("Where it comes from", "Sales per day by region, change against the previous 30 days") + bars(REGIONS, 640, 40); } },
-          { id: "A3", name: "30-day trend", build: "Line chart with constant line", newItem: true, x: 24, y: 424, w: 640, h: 276, html: function () { return vt("Daily sales", "Pale line: daily. Dark line: 7-day average. Dashed: previous period average") + spark(604, 190); } },
+          { id: "A3", name: "30-day trend", build: "Line chart with constant line", newItem: true, x: 24, y: 424, w: 640, h: 276, html: function (c, s) { return vt("Daily sales", "Pale line: daily. Dark line: 7-day average. Dashed: previous period average") + spark(604, 190, s); } },
           { id: "A4", name: "Top products", build: "Table with data bars", x: 688, y: 424, w: 568, h: 276, html: function () { return vt("Top products", "Sales per day, change against the previous 30 days") + bars(PRODUCTS, 520, 36); } }
         ] },
-      { id: "B", eyebrow: "Variant B", title: "Wide trend band, detail below", note: "The trend is the hero. Regions and products sit side by side underneath.", w: 1280, h: 720, bg: "#E9EEF2",
+      { id: "B", eyebrow: "Variant B", title: "Wide trend band, detail below", controls: ["trend"], note: "The trend is the hero. Regions and products sit side by side underneath.", w: 1280, h: 720, bg: "#E9EEF2",
         components: [
           header(),
-          { id: "B1", name: "KPI and trend band", build: "Card (new) + line chart", newItem: true, x: 24, y: 100, w: 1232, h: 280, html: function () { return '<div style="display:flex;gap:28px;height:100%"><div style="width:400px">' + '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:14px">' + kpiNumber + kpiGap + '</div><div style="margin-top:12px">' + chip(status) + '</div></div><div style="flex:1;border-left:2px solid #D5DCE3;padding-left:24px">' + vt("Daily sales", "7-day average against the previous period") + spark(760, 190) + "</div></div>"; } },
+          { id: "B1", name: "KPI and trend band", build: "Card (new) + line chart", newItem: true, x: 24, y: 100, w: 1232, h: 280, html: function (c, s) { return '<div style="display:flex;gap:28px;height:100%"><div style="width:400px">' + '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:14px">' + kpiNumber + kpiGap + '</div><div style="margin-top:12px">' + chip(status) + '</div></div><div style="flex:1;border-left:2px solid #D5DCE3;padding-left:24px">' + vt("Daily sales", "7-day average against the previous period") + spark(760, 190, s) + "</div></div>"; } },
           { id: "B2", name: "Regions", build: "Table with data bars", x: 24, y: 404, w: 604, h: 296, html: function () { return vt("Regions", "Sales per day and change") + bars(REGIONS, 560, 40); } },
           { id: "B3", name: "Top products", build: "Table with data bars", x: 652, y: 404, w: 604, h: 296, html: function () { return vt("Top products", "Sales per day and change") + bars(PRODUCTS, 560, 40); } }
         ] },
@@ -256,6 +268,9 @@ window.MOCKUP = (function () {
   "use strict";
   var M = window.MOCKUP || {};
   var TITLE = M.title || document.title || "Mockup";
+  /* view state: one value per control declared in M.controls */
+  var STATE = {};
+  Object.keys(M.controls || {}).forEach(function (k) { STATE[k] = M.controls[k].value; });
 
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -267,16 +282,35 @@ window.MOCKUP = (function () {
   function target(uid, label) { return 'data-comment-target data-uid="' + esc(uid) + '" data-label="' + esc(label) + '"'; }
 
   function renderComp(c) {
-    var inner = typeof c.html === "function" ? c.html(c) : (c.html || "");
+    var inner = typeof c.html === "function" ? c.html(c, STATE) : (c.html || "");
     var tag = '<div class="mk-tag"><b>' + esc(c.id) + '</b> ' + esc(c.name) + ' <span>| ' + esc(c.build || "") + (c.newItem ? " | new item needed" : "") + " | " + c.w + "x" + c.h + " at " + c.x + "," + c.y + "</span></div>";
     return '<div class="mk-comp' + (c.flat ? " flat" : "") + '" ' + target("comp:" + c.id, c.id + " " + c.name) + ' data-comp="' + esc(c.id) + '" style="left:' + c.x + "px;top:" + c.y + "px;width:" + c.w + "px;height:" + c.h + 'px">' + tag + inner + "</div>";
+  }
+
+  /* Controls: M.controls = { id: { label, value, options: [[value, label], ...] } }.
+     A frame lists the controls it shows in f.controls. A component can also draw one inline with MockupEngine.ctl(id). */
+  function ctl(id, small) {
+    var c = (M.controls || {})[id]; if (!c) return "";
+    return '<div class="mk-seg' + (small ? " sm" : "") + '" role="group" aria-label="' + esc(c.label) + '">' + c.options.map(function (o) {
+      return '<button type="button" data-ctl="' + esc(id) + '" data-val="' + esc(o[0]) + '" aria-pressed="' + (String(STATE[id]) === String(o[0])) + '">' + esc(o[1]) + "</button>";
+    }).join("") + "</div>";
+  }
+  function ctlBar(f) {
+    var ids = f.controls || []; if (!ids.length) return "";
+    return '<div class="mk-ctlbar">' + ids.map(function (id) { var c = M.controls[id]; return '<span class="mk-ctl"><span class="mk-ctl-label">' + esc(c.label) + "</span>" + ctl(id) + "</span>"; }).join("") + "</div>";
+  }
+  function compsOf(f) { return (typeof f.components === "function" ? f.components(STATE) : (f.components || [])); }
+  function rerender() {
+    renderFrames(); fit();
+    var m = document.body.getAttribute("data-mk-mode");
+    if (m === "native") addNativeButtons(); else if (m === "standalone") renderPins();
   }
 
   function renderFrames() {
     var host = $("#mk-frames"), out = "";
     (M.frames || []).forEach(function (f) {
-      var stage = '<div class="mk-stagewrap"><div class="mk-sizer"><div class="mk-stage" data-w="' + f.w + '" data-h="' + f.h + '" style="width:' + f.w + "px;height:" + f.h + "px;background:" + (f.bg || "var(--mk-frame-bg)") + '">' + (f.components || []).map(renderComp).join("") + "</div></div></div>";
-      var body = '<div class="mk-eyebrow">' + esc(f.eyebrow || "") + "</div><h2>" + esc(f.title || "") + "</h2>" + (f.note ? "<p>" + f.note + "</p>" : "") + stage;
+      var stage = '<div class="mk-stagewrap"><div class="mk-sizer"><div class="mk-stage" data-w="' + f.w + '" data-h="' + f.h + '" style="width:' + f.w + "px;height:" + f.h + "px;background:" + (f.bg || "var(--mk-frame-bg)") + '">' + compsOf(f).map(renderComp).join("") + "</div></div></div>";
+      var body = '<div class="mk-eyebrow">' + esc(f.eyebrow || "") + "</div><h2>" + esc(f.title || "") + "</h2>" + (f.note ? "<p>" + f.note + "</p>" : "") + ctlBar(f) + stage;
       out += '<div id="frame-' + esc(f.id) + '" class="' + (f.band ? "mk-band" : "") + '"><div class="mk-wrap wide mk-sec">' + body + "</div></div>";
     });
     host.innerHTML = out;
@@ -343,20 +377,45 @@ window.MOCKUP = (function () {
   function startNative(c) {
     document.body.classList.add("mk-native");
     addNativeButtons();
+    /* a visible comment mode, so commenting does not depend on finding the hover button */
+    var nb = $("#mk-mode"), nativeOn = false;
+    nb.hidden = false; nb.textContent = "Add a comment: off"; nb.setAttribute("aria-pressed", "false");
+    nb.addEventListener("click", function () {
+      nativeOn = !nativeOn;
+      document.body.classList.toggle("mk-commenting", nativeOn);
+      nb.classList.toggle("on", nativeOn); nb.setAttribute("aria-pressed", String(nativeOn));
+      nb.textContent = "Add a comment: " + (nativeOn ? "on, click an element" : "off");
+    });
+    document.addEventListener("click", function (e) {
+      if (!nativeOn) return;
+      if (e.target.closest(".mk-toolbar,#mk-pop,#mk-panel")) return;
+      var t = e.target.closest("[data-comment-target]"); if (!t) return;
+      e.preventDefault(); e.stopPropagation();
+      c.openComposer({ element: t }).then(function (r) { if (r && r.opened === false) status("The comment box did not open. Click the page once, then try again."); })
+        .catch(function () { status("Commenting is not available right now."); });
+    }, true);
     document.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest(".mk-cbtn"); if (!b) return;
       e.preventDefault(); e.stopPropagation();
       var host = b.closest("[data-comment-target]"); if (!host) return;
       c.openComposer({ element: host }).catch(function () { status("Commenting is not available right now."); });
     });
+    var sent = false, sending = false;
     $("#mk-finish").addEventListener("click", function () {
+      if (sent || sending) { status("Already sent. The agent answers in a comment thread at this button, then publishes a new version. Reload this page when it says it is done."); return; }
       if (typeof c.sendToClaude !== "function" || typeof c.canSendToClaude !== "function") { status("Tell the agent in chat that you are done."); return; }
+      sending = true;
       c.canSendToClaude().then(function (v) {
-        if (v !== "available") { status("Sending to the agent is not available here. Tell it in chat that you are done."); return; }
+        if (v !== "available") { sending = false; status("Sending to the agent is not available here. Tell it in chat that you are done."); return; }
         return c.anchorFor($("#mk-finish")).then(function (a) {
           return c.sendToClaude({ anchor: a, text: "Review finished. Please read every comment thread on this page and update the mockup once." });
-        }).then(function () { status("Sent. The agent will read all comments."); });
+        }).then(function () {
+          sent = true; sending = false;
+          var b = $("#mk-finish"); b.textContent = "Review sent"; b.disabled = true;
+          status("Sent once. The agent answers in a comment thread at this button, reads all comments, then publishes a new version of this page. Reload it later.");
+        });
       }).catch(function (err) {
+        sending = false;
         var code = err && err.code;
         status(code === "consent_required" ? "Allow comments from this page when asked, then press again." : code === "forbidden" ? "Commenting from the page is off here. Tell the agent in chat that you are done." : "Could not send. Tell the agent in chat that you are done.");
       });
@@ -496,6 +555,12 @@ window.MOCKUP = (function () {
   }
 
   function init() {
+    if (M.css) { var st = document.createElement("style"); st.textContent = M.css; document.head.appendChild(st); }
+    (M.fontLinks || []).forEach(function (u) { var l = document.createElement("link"); l.rel = "stylesheet"; l.href = u; document.head.appendChild(l); });
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-ctl]"); if (!b) return;
+      STATE[b.getAttribute("data-ctl")] = b.getAttribute("data-val"); rerender();
+    });
     renderLegend(); renderFrames(); renderExtras(); renderDecisions(); renderBuild();
     var tg = $("#mk-tags");
     function tags() { document.body.classList.toggle("mk-show-tags", tg.checked); }
@@ -511,7 +576,7 @@ window.MOCKUP = (function () {
     });
   }
 
-  window.MockupEngine = { markdown: markdown, comments: function () { return items.slice(); } };
+  window.MockupEngine = { markdown: markdown, comments: function () { return items.slice(); }, ctl: ctl, state: STATE, rerender: rerender };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
 

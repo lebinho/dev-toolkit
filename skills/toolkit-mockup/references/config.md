@@ -35,9 +35,34 @@ window.MOCKUP = {
 };
 ```
 
+## Switches (view controls)
+
+Use them to show options on one frame instead of drawing several: where a selector sits, totals or per day, a level, days shown.
+
+```js
+controls: { units: { label: "Show", value: "total", options: [["total", "Total"], ["day", "Per day"]] } },
+frames: [ {
+  id: "M", controls: ["units"],                 // shows the switch above the frame
+  components: function (s) {                    // components can be a function of the state s
+    return [ { id: "A1", name: "Chart", x: 0, y: 0, w: 400, h: 300,
+      html: function (c, s) { return s.units === "total" ? "..." : "..."; } } ];
+  }
+} ]
+```
+
+- `s` holds one value per control. A component's `html` receives `(component, s)`.
+- To draw a switch inside a component, call `MockupEngine.ctl("units", true)` in its `html` (the second argument makes it small).
+- A click on a switch re-renders the frames. Comment pins are kept.
+- Test every combination of switches for bad values (`NaN`, `undefined`). The smoke test checks that a switch works, not every combination.
+
+## Extra styling and fonts
+
+- `css: "..."` adds your CSS after the engine's. Scope it to your own class names.
+- `fontLinks: ["https://..."]` adds stylesheet links (for example web fonts). Leave it out for a page that must load nothing from outside.
+
 ## Styling tokens
 
-Override these CSS variables with a `<style>` block at the top of the shell or in the content file to match a design system:
+Override these CSS variables in `css` to match a design system:
 `--mk-bg`, `--mk-surface`, `--mk-ink`, `--mk-ink2`, `--mk-line`, `--mk-accent`, `--mk-accent-soft`, `--mk-mark`, `--mk-mark-line`, `--mk-frame-bg`, `--mk-comp-bg`, `--mk-head`, `--mk-body`.
 
 ## Rules for the content file

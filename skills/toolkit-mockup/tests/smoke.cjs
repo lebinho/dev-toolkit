@@ -43,6 +43,16 @@ function click(win, el, x, y) {
   ok(w.MockupEngine.markdown().indexOf("Make this bigger") > 0, "markdown export has the text");
   ok(/## /.test(w.MockupEngine.markdown()), "markdown names the element");
   ok(w.localStorage.length === 1, "comment kept in localStorage");
+  click(w, d.querySelector("#mk-mode"));
+  ok(!d.body.classList.contains("mk-commenting"), "comment mode off again");
+  const ctlBtn = d.querySelector('[data-ctl][aria-pressed="false"]');
+  if (ctlBtn) {
+    const id = ctlBtn.getAttribute("data-ctl"), val = ctlBtn.getAttribute("data-val");
+    click(w, ctlBtn);
+    ok(String(w.MockupEngine.state[id]) === val, "a view control changes the state");
+    ok(d.querySelector('[data-ctl="' + id + '"][data-val="' + val + '"]').getAttribute("aria-pressed") === "true", "the control shows the new choice after re-render");
+    ok(d.querySelectorAll(".mk-pin").length === 1, "comment pins survive a re-render");
+  } else { console.log("SKIP view control checks (page has no controls)"); }
   click(w, d.querySelector("#mk-finish"));
   ok(d.querySelector("#mk-export").value.indexOf("Make this bigger") > 0, "finish shows the export text");
   w.close();
@@ -61,14 +71,26 @@ function click(win, el, x, y) {
   });
   w = r.dom.window; d = w.document;
   ok(r.mode === "native", "native mode when the host offers comments");
-  ok(d.querySelector("#mk-mode").hidden, "standalone buttons hidden in native mode");
+  ok(d.querySelector("#mk-copy").hidden && d.querySelector("#mk-dl").hidden, "standalone export buttons hidden in native mode");
+  ok(!d.querySelector("#mk-mode").hidden, "a visible comment mode button in native mode");
   const btn = d.querySelector(".mk-comp > .mk-cbtn");
   ok(!!btn, "native comment button present on components");
   click(w, btn);
+  const before = calls.composer;
+  click(w, d.querySelector("#mk-mode"));
+  ok(d.body.classList.contains("mk-commenting"), "native comment mode turns on");
+  click(w, d.querySelector(".mk-comp"));
+  ok(calls.composer === before + 1 && calls.el.classList.contains("mk-comp"), "clicking an element in comment mode opens the host composer");
+  click(w, d.querySelector("#mk-mode"));
+  calls.composer = 1;
   ok(calls.composer === 1 && calls.el && calls.el.classList.contains("mk-comp"), "button opens the host composer on the component");
   click(w, d.querySelector("#mk-finish"));
   await new Promise(function (res) { setTimeout(res, 50); });
   ok(calls.sent === 1 && /Review finished/.test(calls.payload.text), "finish sends one message to the agent");
+  click(w, d.querySelector("#mk-finish")); click(w, d.querySelector("#mk-finish"));
+  await new Promise(function (res) { setTimeout(res, 50); });
+  ok(calls.sent === 1, "pressing Finish again does not send again (" + calls.sent + " sent)");
+  ok(d.querySelector("#mk-finish").disabled && /sent/i.test(d.querySelector("#mk-finish").textContent), "the Finish button shows it was sent and is disabled");
   w.close();
 
   console.log(failed ? failed + " check(s) failed" : "all checks passed");

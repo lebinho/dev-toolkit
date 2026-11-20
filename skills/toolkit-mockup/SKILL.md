@@ -28,6 +28,7 @@ Pick the reference for the target: `references/power-bi.md`, `references/fabric-
 9. **Add a build list.** One table: element, built with, what it needs, what to watch out for. New measures or components are model or code changes, so list them in one place and get approval before making any.
 10. **Publish or open the page, then wait.** Tell the user how to comment (see below).
 11. **Comment loop.** Comments are a queue until the user says they are done. Do not change the page while the user is still commenting. When they are done, read every comment, change the page once, and tell them what changed and what you did not change.
+    After each round, write the decisions and the open comments into the project's notes, with the page link. The comments live on the host or in the user's browser, not in the project, so a later session cannot find them unless you record them.
 12. **Hand off.** When a layout is chosen, write the build brief for the target (for Power BI see `references/power-bi.md`). Record decisions where the project keeps them.
 
 ## Build the page

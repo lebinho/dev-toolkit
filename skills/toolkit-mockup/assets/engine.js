@@ -7,6 +7,9 @@
   "use strict";
   var M = window.MOCKUP || {};
   var TITLE = M.title || document.title || "Mockup";
+  /* view state: one value per control declared in M.controls */
+  var STATE = {};
+  Object.keys(M.controls || {}).forEach(function (k) { STATE[k] = M.controls[k].value; });
 
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -18,16 +21,35 @@
   function target(uid, label) { return 'data-comment-target data-uid="' + esc(uid) + '" data-label="' + esc(label) + '"'; }
 
   function renderComp(c) {
-    var inner = typeof c.html === "function" ? c.html(c) : (c.html || "");
+    var inner = typeof c.html === "function" ? c.html(c, STATE) : (c.html || "");
     var tag = '<div class="mk-tag"><b>' + esc(c.id) + '</b> ' + esc(c.name) + ' <span>| ' + esc(c.build || "") + (c.newItem ? " | new item needed" : "") + " | " + c.w + "x" + c.h + " at " + c.x + "," + c.y + "</span></div>";
     return '<div class="mk-comp' + (c.flat ? " flat" : "") + '" ' + target("comp:" + c.id, c.id + " " + c.name) + ' data-comp="' + esc(c.id) + '" style="left:' + c.x + "px;top:" + c.y + "px;width:" + c.w + "px;height:" + c.h + 'px">' + tag + inner + "</div>";
+  }
+
+  /* Controls: M.controls = { id: { label, value, options: [[value, label], ...] } }.
+     A frame lists the controls it shows in f.controls. A component can also draw one inline with MockupEngine.ctl(id). */
+  function ctl(id, small) {
+    var c = (M.controls || {})[id]; if (!c) return "";
+    return '<div class="mk-seg' + (small ? " sm" : "") + '" role="group" aria-label="' + esc(c.label) + '">' + c.options.map(function (o) {
+      return '<button type="button" data-ctl="' + esc(id) + '" data-val="' + esc(o[0]) + '" aria-pressed="' + (String(STATE[id]) === String(o[0])) + '">' + esc(o[1]) + "</button>";
+    }).join("") + "</div>";
+  }
+  function ctlBar(f) {
+    var ids = f.controls || []; if (!ids.length) return "";
+    return '<div class="mk-ctlbar">' + ids.map(function (id) { var c = M.controls[id]; return '<span class="mk-ctl"><span class="mk-ctl-label">' + esc(c.label) + "</span>" + ctl(id) + "</span>"; }).join("") + "</div>";
+  }
+  function compsOf(f) { return (typeof f.components === "function" ? f.components(STATE) : (f.components || [])); }
+  function rerender() {
+    renderFrames(); fit();
+    var m = document.body.getAttribute("data-mk-mode");
+    if (m === "native") addNativeButtons(); else if (m === "standalone") renderPins();
   }
 
   function renderFrames() {
     var host = $("#mk-frames"), out = "";
     (M.frames || []).forEach(function (f) {
-      var stage = '<div class="mk-stagewrap"><div class="mk-sizer"><div class="mk-stage" data-w="' + f.w + '" data-h="' + f.h + '" style="width:' + f.w + "px;height:" + f.h + "px;background:" + (f.bg || "var(--mk-frame-bg)") + '">' + (f.components || []).map(renderComp).join("") + "</div></div></div>";
-      var body = '<div class="mk-eyebrow">' + esc(f.eyebrow || "") + "</div><h2>" + esc(f.title || "") + "</h2>" + (f.note ? "<p>" + f.note + "</p>" : "") + stage;
+      var stage = '<div class="mk-stagewrap"><div class="mk-sizer"><div class="mk-stage" data-w="' + f.w + '" data-h="' + f.h + '" style="width:' + f.w + "px;height:" + f.h + "px;background:" + (f.bg || "var(--mk-frame-bg)") + '">' + compsOf(f).map(renderComp).join("") + "</div></div></div>";
+      var body = '<div class="mk-eyebrow">' + esc(f.eyebrow || "") + "</div><h2>" + esc(f.title || "") + "</h2>" + (f.note ? "<p>" + f.note + "</p>" : "") + ctlBar(f) + stage;
       out += '<div id="frame-' + esc(f.id) + '" class="' + (f.band ? "mk-band" : "") + '"><div class="mk-wrap wide mk-sec">' + body + "</div></div>";
     });
     host.innerHTML = out;
@@ -94,20 +116,45 @@
   function startNative(c) {
     document.body.classList.add("mk-native");
     addNativeButtons();
+    /* a visible comment mode, so commenting does not depend on finding the hover button */
+    var nb = $("#mk-mode"), nativeOn = false;
+    nb.hidden = false; nb.textContent = "Add a comment: off"; nb.setAttribute("aria-pressed", "false");
+    nb.addEventListener("click", function () {
+      nativeOn = !nativeOn;
+      document.body.classList.toggle("mk-commenting", nativeOn);
+      nb.classList.toggle("on", nativeOn); nb.setAttribute("aria-pressed", String(nativeOn));
+      nb.textContent = "Add a comment: " + (nativeOn ? "on, click an element" : "off");
+    });
+    document.addEventListener("click", function (e) {
+      if (!nativeOn) return;
+      if (e.target.closest(".mk-toolbar,#mk-pop,#mk-panel")) return;
+      var t = e.target.closest("[data-comment-target]"); if (!t) return;
+      e.preventDefault(); e.stopPropagation();
+      c.openComposer({ element: t }).then(function (r) { if (r && r.opened === false) status("The comment box did not open. Click the page once, then try again."); })
+        .catch(function () { status("Commenting is not available right now."); });
+    }, true);
     document.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest(".mk-cbtn"); if (!b) return;
       e.preventDefault(); e.stopPropagation();
       var host = b.closest("[data-comment-target]"); if (!host) return;
       c.openComposer({ element: host }).catch(function () { status("Commenting is not available right now."); });
     });
+    var sent = false, sending = false;
     $("#mk-finish").addEventListener("click", function () {
+      if (sent || sending) { status("Already sent. The agent answers in a comment thread at this button, then publishes a new version. Reload this page when it says it is done."); return; }
       if (typeof c.sendToClaude !== "function" || typeof c.canSendToClaude !== "function") { status("Tell the agent in chat that you are done."); return; }
+      sending = true;
       c.canSendToClaude().then(function (v) {
-        if (v !== "available") { status("Sending to the agent is not available here. Tell it in chat that you are done."); return; }
+        if (v !== "available") { sending = false; status("Sending to the agent is not available here. Tell it in chat that you are done."); return; }
         return c.anchorFor($("#mk-finish")).then(function (a) {
           return c.sendToClaude({ anchor: a, text: "Review finished. Please read every comment thread on this page and update the mockup once." });
-        }).then(function () { status("Sent. The agent will read all comments."); });
+        }).then(function () {
+          sent = true; sending = false;
+          var b = $("#mk-finish"); b.textContent = "Review sent"; b.disabled = true;
+          status("Sent once. The agent answers in a comment thread at this button, reads all comments, then publishes a new version of this page. Reload it later.");
+        });
       }).catch(function (err) {
+        sending = false;
         var code = err && err.code;
         status(code === "consent_required" ? "Allow comments from this page when asked, then press again." : code === "forbidden" ? "Commenting from the page is off here. Tell the agent in chat that you are done." : "Could not send. Tell the agent in chat that you are done.");
       });
@@ -247,6 +294,12 @@
   }
 
   function init() {
+    if (M.css) { var st = document.createElement("style"); st.textContent = M.css; document.head.appendChild(st); }
+    (M.fontLinks || []).forEach(function (u) { var l = document.createElement("link"); l.rel = "stylesheet"; l.href = u; document.head.appendChild(l); });
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-ctl]"); if (!b) return;
+      STATE[b.getAttribute("data-ctl")] = b.getAttribute("data-val"); rerender();
+    });
     renderLegend(); renderFrames(); renderExtras(); renderDecisions(); renderBuild();
     var tg = $("#mk-tags");
     function tags() { document.body.classList.toggle("mk-show-tags", tg.checked); }
@@ -262,6 +315,6 @@
     });
   }
 
-  window.MockupEngine = { markdown: markdown, comments: function () { return items.slice(); } };
+  window.MockupEngine = { markdown: markdown, comments: function () { return items.slice(); }, ctl: ctl, state: STATE, rerender: rerender };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

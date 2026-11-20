@@ -32,12 +32,13 @@ window.MOCKUP = (function () {
     var c = ST[s];
     return '<span style="display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 5px;border:2px solid ' + c[2] + ';border-radius:999px;background:#fff;font-weight:600;font-size:15px;white-space:nowrap"><i style="width:20px;height:20px;border-radius:50%;background:' + c[2] + ';color:' + c[3] + ';display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:700">' + c[1] + "</i>" + c[0] + "</span>";
   }
-  function spark(w, h) {
-    var lo = 25000, hi = 62000, L = 8, R = 70, T = 10, B = 24, n = CUR.length;
+  function spark(w, h, st) {
+    var CURV = (st && st.trend === "14") ? CUR.slice(-14) : CUR;
+    var lo = 25000, hi = 62000, L = 8, R = 70, T = 10, B = 24, n = CURV.length;
     function X(i) { return L + (w - L - R) * i / (n - 1); }
     function Y(v) { return T + (h - T - B) * (1 - (v - lo) / (hi - lo)); }
-    var path = CUR.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
-    var ma = CUR.map(function (v, i) { var a = CUR.slice(Math.max(0, i - 6), i + 1); return avg(a); });
+    var path = CURV.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
+    var ma = CURV.map(function (v, i) { var a = CURV.slice(Math.max(0, i - 6), i + 1); return avg(a); });
     var mp = ma.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
     var ry = Y(prevAvg);
     return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Daily sales for 30 days with a 7-day average and the previous period average">'
@@ -73,6 +74,7 @@ window.MOCKUP = (function () {
       { title: "What is invented", html: "<p>The company, regions, products and every number. The numbers come from a small seeded generator, so they are the same on every build. In a real project this is where you put real values read from the data source.</p>" },
       { title: "Try this", html: "<p>Press <b>Comment mode</b>, click a component and write a comment. Toggle <b>Show build labels</b> to see each element's size and position. Then press <b>Finish review</b>.</p>" }
     ],
+    controls: { trend: { label: "Trend window", value: "30", options: [["30", "30 days"], ["14", "14 days"]] } },
     decisionsTitle: "Three things the reviewer decides",
     decisions: [
       "<b>Layout.</b> A keeps the KPI on top left and puts regions beside it. B gives the trend the full width. Which reads faster?",
@@ -80,18 +82,18 @@ window.MOCKUP = (function () {
       "<b>Trend window.</b> 30 days with a 7-day average. Would 90 days be more useful for this audience?"
     ],
     frames: [
-      { id: "A", eyebrow: "Variant A", title: "KPI top left, regions beside it", note: "The reader sees the answer first, then where it comes from, then the detail.", w: 1280, h: 720, bg: "#E9EEF2",
+      { id: "A", eyebrow: "Variant A", title: "KPI top left, regions beside it", controls: ["trend"], note: "The reader sees the answer first, then where it comes from, then the detail.", w: 1280, h: 720, bg: "#E9EEF2",
         components: [
           header(),
           { id: "A1", name: "KPI card", build: "Card (new) + line chart", x: 24, y: 100, w: 520, h: 300, html: function (c) { return '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:10px">' + kpiNumber + kpiGap + '</div><div style="margin-top:10px">' + chip(status) + '</div>'; } },
           { id: "A2", name: "Regions", build: "Table with data bars", x: 568, y: 100, w: 688, h: 300, html: function () { return vt("Where it comes from", "Sales per day by region, change against the previous 30 days") + bars(REGIONS, 640, 40); } },
-          { id: "A3", name: "30-day trend", build: "Line chart with constant line", newItem: true, x: 24, y: 424, w: 640, h: 276, html: function () { return vt("Daily sales", "Pale line: daily. Dark line: 7-day average. Dashed: previous period average") + spark(604, 190); } },
+          { id: "A3", name: "30-day trend", build: "Line chart with constant line", newItem: true, x: 24, y: 424, w: 640, h: 276, html: function (c, s) { return vt("Daily sales", "Pale line: daily. Dark line: 7-day average. Dashed: previous period average") + spark(604, 190, s); } },
           { id: "A4", name: "Top products", build: "Table with data bars", x: 688, y: 424, w: 568, h: 276, html: function () { return vt("Top products", "Sales per day, change against the previous 30 days") + bars(PRODUCTS, 520, 36); } }
         ] },
-      { id: "B", eyebrow: "Variant B", title: "Wide trend band, detail below", note: "The trend is the hero. Regions and products sit side by side underneath.", w: 1280, h: 720, bg: "#E9EEF2",
+      { id: "B", eyebrow: "Variant B", title: "Wide trend band, detail below", controls: ["trend"], note: "The trend is the hero. Regions and products sit side by side underneath.", w: 1280, h: 720, bg: "#E9EEF2",
         components: [
           header(),
-          { id: "B1", name: "KPI and trend band", build: "Card (new) + line chart", newItem: true, x: 24, y: 100, w: 1232, h: 280, html: function () { return '<div style="display:flex;gap:28px;height:100%"><div style="width:400px">' + '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:14px">' + kpiNumber + kpiGap + '</div><div style="margin-top:12px">' + chip(status) + '</div></div><div style="flex:1;border-left:2px solid #D5DCE3;padding-left:24px">' + vt("Daily sales", "7-day average against the previous period") + spark(760, 190) + "</div></div>"; } },
+          { id: "B1", name: "KPI and trend band", build: "Card (new) + line chart", newItem: true, x: 24, y: 100, w: 1232, h: 280, html: function (c, s) { return '<div style="display:flex;gap:28px;height:100%"><div style="width:400px">' + '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:14px">' + kpiNumber + kpiGap + '</div><div style="margin-top:12px">' + chip(status) + '</div></div><div style="flex:1;border-left:2px solid #D5DCE3;padding-left:24px">' + vt("Daily sales", "7-day average against the previous period") + spark(760, 190, s) + "</div></div>"; } },
           { id: "B2", name: "Regions", build: "Table with data bars", x: 24, y: 404, w: 604, h: 296, html: function () { return vt("Regions", "Sales per day and change") + bars(REGIONS, 560, 40); } },
           { id: "B3", name: "Top products", build: "Table with data bars", x: 652, y: 404, w: 604, h: 296, html: function () { return vt("Top products", "Sales per day and change") + bars(PRODUCTS, 560, 40); } }
         ] },
