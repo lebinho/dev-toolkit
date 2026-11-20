@@ -1,0 +1,59 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+{{CSS}}
+</style>
+
+<div class="mk-toolbar" role="region" aria-label="Mockup controls">
+  <strong>Mockup controls</strong>
+  <label><input type="checkbox" id="mk-tags" checked> Show build labels</label>
+  <button class="mk-btn" id="mk-mode" type="button" hidden aria-pressed="false">Comment mode: off</button>
+  <button class="mk-btn" id="mk-copy" type="button" hidden>Copy comments</button>
+  <button class="mk-btn" id="mk-dl" type="button" hidden>Download .md</button>
+  <button class="mk-btn" id="mk-clear" type="button" hidden>Clear all</button>
+  <button class="mk-btn primary" id="mk-finish" type="button">Finish review</button>
+  <span id="mk-status" role="status" aria-live="polite"></span>
+</div>
+
+<div class="mk-wrap">
+  <div class="mk-eyebrow" id="mk-eyebrow"></div>
+  <h1 id="mk-title"></h1>
+  <div class="mk-lead" id="mk-intro"></div>
+  <div class="mk-grid2" style="margin-top:18px" id="mk-how"></div>
+  <div class="mk-chips" id="mk-legend" aria-label="Legend of build labels"></div>
+</div>
+
+<div class="mk-band" id="mk-decisions-band"><div class="mk-wrap mk-sec">
+  <h2 id="mk-decisions-title">Decisions needed</h2>
+  <ol class="mk-q" id="mk-decisions"></ol>
+</div></div>
+
+<div id="mk-frames"></div>
+<div id="mk-extras"></div>
+
+<div class="mk-band" id="mk-build-band"><div class="mk-wrap wide mk-sec">
+  <div class="mk-eyebrow">Build list</div>
+  <h2 id="mk-build-title">What builds each element, and what it still needs</h2>
+  <p id="mk-build-intro"></p>
+  <div class="mk-tbl" id="mk-build" data-comment-target data-uid="buildlist" data-label="Build list"></div>
+</div></div>
+
+<div class="mk-wrap" id="mk-panel" hidden>
+  <h2>Your comments</h2>
+  <p class="mk-foot">Kept in this browser only. Copy them as Markdown and paste them into your agent chat, then say you are done.</p>
+  <ul id="mk-list"></ul>
+  <textarea id="mk-export" readonly hidden aria-label="Comments as Markdown"></textarea>
+</div>
+
+<div id="mk-pop" hidden role="dialog" aria-label="Add a comment">
+  <div class="who" id="mk-pop-who"></div>
+  <textarea id="mk-pop-text" aria-label="Comment text"></textarea>
+  <div class="row"><button class="mk-btn" id="mk-pop-cancel" type="button">Cancel</button><button class="mk-btn primary" id="mk-pop-save" type="button">Save comment</button></div>
+</div>
+
+<script>
+{{CONTENT}}
+</script>
+<script>
+{{ENGINE}}
+</script>

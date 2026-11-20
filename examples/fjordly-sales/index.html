@@ -1,0 +1,518 @@
+<title>Sales Overview Mockups</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* toolkit-mockup engine styles. One light look by choice, every colour explicit.
+   Override the --mk-* tokens in the content file to match a design system. */
+:root{
+  --mk-bg:#F4F6F8; --mk-surface:#FFFFFF; --mk-ink:#1B2733; --mk-ink2:#3F5163; --mk-line:#D5DCE3;
+  --mk-accent:#0F6E6E; --mk-accent-soft:#E2F1F0; --mk-mark:#FFE08A; --mk-mark-line:#E0B84A;
+  --mk-frame-bg:#E9EEF2; --mk-comp-bg:#FFFFFF;
+  --mk-head:'Outfit','Trebuchet MS','Segoe UI',sans-serif; --mk-body:'Inter','Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--mk-bg);color:var(--mk-ink);font:400 16px/1.55 var(--mk-body)}
+.mk-wrap{max-width:1180px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mk-wrap.wide{max-width:1560px}
+h1,h2,h3{font-family:var(--mk-head);font-weight:500;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:2.3rem;letter-spacing:-.01em}
+h2{font-size:1.55rem;margin-bottom:6px}
+h3{font-size:1.1rem;margin-bottom:4px}
+p{margin:0 0 .8em;max-width:70ch}
+.mk-eyebrow{font:600 .75rem/1 var(--mk-body);letter-spacing:.12em;text-transform:uppercase;color:var(--mk-accent);margin-bottom:10px}
+.mk-lead{font-size:1.08rem;max-width:62ch}
+.mk-band{background:var(--mk-surface);border-block:1px solid var(--mk-line)}
+.mk-sec{padding-block:40px 8px}
+.mk-note{background:var(--mk-surface);border:1px solid var(--mk-line);border-radius:14px;padding:16px 18px;position:relative}
+.mk-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.mk-chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.mk-chip{display:inline-flex;align-items:center;border-radius:999px;padding:3px 11px;font:500 .78rem/1.4 var(--mk-body);background:var(--mk-accent-soft);border:1px solid var(--mk-line)}
+.mk-chip.custom{background:var(--mk-mark);border-color:var(--mk-mark-line)}
+.mk-chip.measure{background:var(--mk-surface);border:1.5px dashed var(--mk-accent)}
+ol.mk-q{margin:0;padding-left:1.2em;display:grid;gap:12px}
+.mk-q li{position:relative;padding:2px 4px}
+.mk-tbl{overflow-x:auto;border:1px solid var(--mk-line);border-radius:14px;background:var(--mk-surface);position:relative}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--mk-line);vertical-align:top}
+th{font:600 .75rem/1.3 var(--mk-body);letter-spacing:.06em;text-transform:uppercase;color:var(--mk-accent);background:var(--mk-accent-soft)}
+tr:last-child td{border-bottom:0}
+code{font:500 .85em ui-monospace,Consolas,monospace;background:var(--mk-accent-soft);padding:1px 5px;border-radius:5px}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--mk-ink);outline-offset:2px}
+
+/* toolbar */
+.mk-toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--mk-bg);border-bottom:1px solid var(--mk-line);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:12px 18px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+.mk-toolbar label{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.mk-toolbar input[type=checkbox]{accent-color:var(--mk-accent);width:18px;height:18px}
+.mk-btn{border:1.5px solid var(--mk-accent);background:var(--mk-surface);color:var(--mk-ink);border-radius:999px;font:600 .85rem/1 var(--mk-body);padding:8px 14px;cursor:pointer}
+.mk-btn:hover{background:var(--mk-accent-soft)}
+.mk-btn.on{background:var(--mk-accent);color:#fff}
+.mk-btn.primary{background:var(--mk-accent);color:#fff}
+.mk-btn.primary:hover{background:var(--mk-ink)}
+#mk-status{color:var(--mk-ink2);font-size:.85rem}
+
+/* stage: true pixel frames scaled to fit */
+.mk-stagewrap{width:100%;overflow-x:auto;overflow-y:hidden;border-radius:14px;border:1px solid var(--mk-line);background:var(--mk-frame-bg)}
+.mk-sizer{position:relative}
+.mk-stage{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;color:var(--mk-ink);font:400 16px/1.3 var(--mk-body)}
+.mk-comp{position:absolute;background:var(--mk-comp-bg);border-radius:12px;padding:16px 18px;overflow:visible}
+.mk-comp.flat{background:transparent;padding:0}
+.mk-tag{display:none;position:absolute;left:0;top:-23px;height:21px;white-space:nowrap;z-index:5;font:600 12px/21px var(--mk-body);color:var(--mk-ink);background:var(--mk-mark);border-radius:6px;padding:0 8px;border:1px solid var(--mk-mark-line)}
+body.mk-show-tags .mk-tag{display:block}
+.mk-tag span{opacity:.8;font-weight:500}
+
+/* comments: native buttons, standalone mode, pins */
+.mk-cbtn{display:none;position:absolute;top:8px;right:8px;z-index:6;border:1.5px solid var(--mk-accent);background:var(--mk-surface);color:var(--mk-ink);border-radius:999px;font:600 13px/1 var(--mk-body);padding:6px 11px;cursor:pointer}
+body.mk-native [data-comment-target]:hover>.mk-cbtn,body.mk-native [data-comment-target]:focus-within>.mk-cbtn{display:block}
+.mk-stage .mk-cbtn{font-size:18px;padding:8px 15px;top:10px;right:10px}
+body.mk-commenting [data-comment-target]{cursor:crosshair}
+body.mk-commenting [data-comment-target]:hover{outline:3px dashed var(--mk-accent);outline-offset:2px}
+.mk-pin{position:absolute;z-index:8;transform:translate(-50%,-50%);min-width:24px;height:24px;border-radius:999px;background:var(--mk-ink);color:#fff;font:700 12px/24px var(--mk-body);text-align:center;padding:0 6px;border:2px solid #fff;pointer-events:none}
+.mk-stage .mk-pin{min-width:34px;height:34px;line-height:34px;font-size:18px}
+#mk-pop{position:fixed;z-index:50;width:min(340px,calc(100vw - 24px));background:var(--mk-surface);border:2px solid var(--mk-ink);border-radius:14px;padding:12px;box-shadow:0 12px 32px rgba(27,39,51,.25)}
+#mk-pop textarea{width:100%;min-height:84px;border:1.5px solid var(--mk-line);border-radius:10px;padding:8px;font:400 .95rem/1.4 var(--mk-body);color:var(--mk-ink);background:#fff;resize:vertical}
+#mk-pop .row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+#mk-pop .who{font-size:.8rem;color:var(--mk-ink2);margin-bottom:6px}
+#mk-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#mk-panel li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;background:var(--mk-surface);border:1px solid var(--mk-line);border-radius:12px;padding:10px 12px}
+#mk-panel .n{background:var(--mk-ink);color:#fff;border-radius:999px;min-width:26px;height:26px;text-align:center;font:700 .8rem/26px var(--mk-body)}
+#mk-panel .t{font-size:.8rem;color:var(--mk-ink2)}
+#mk-export{width:100%;min-height:140px;border:1.5px solid var(--mk-line);border-radius:10px;padding:10px;font:400 .85rem/1.4 ui-monospace,Consolas,monospace;color:var(--mk-ink);background:#fff;margin-top:10px}
+.mk-foot{font-size:.85rem;color:var(--mk-ink2)}
+@media (prefers-reduced-motion:no-preference){.mk-btn,.mk-cbtn{transition:background .15s}}
+
+</style>
+
+<div class="mk-toolbar" role="region" aria-label="Mockup controls">
+  <strong>Mockup controls</strong>
+  <label><input type="checkbox" id="mk-tags" checked> Show build labels</label>
+  <button class="mk-btn" id="mk-mode" type="button" hidden aria-pressed="false">Comment mode: off</button>
+  <button class="mk-btn" id="mk-copy" type="button" hidden>Copy comments</button>
+  <button class="mk-btn" id="mk-dl" type="button" hidden>Download .md</button>
+  <button class="mk-btn" id="mk-clear" type="button" hidden>Clear all</button>
+  <button class="mk-btn primary" id="mk-finish" type="button">Finish review</button>
+  <span id="mk-status" role="status" aria-live="polite"></span>
+</div>
+
+<div class="mk-wrap">
+  <div class="mk-eyebrow" id="mk-eyebrow"></div>
+  <h1 id="mk-title"></h1>
+  <div class="mk-lead" id="mk-intro"></div>
+  <div class="mk-grid2" style="margin-top:18px" id="mk-how"></div>
+  <div class="mk-chips" id="mk-legend" aria-label="Legend of build labels"></div>
+</div>
+
+<div class="mk-band" id="mk-decisions-band"><div class="mk-wrap mk-sec">
+  <h2 id="mk-decisions-title">Decisions needed</h2>
+  <ol class="mk-q" id="mk-decisions"></ol>
+</div></div>
+
+<div id="mk-frames"></div>
+<div id="mk-extras"></div>
+
+<div class="mk-band" id="mk-build-band"><div class="mk-wrap wide mk-sec">
+  <div class="mk-eyebrow">Build list</div>
+  <h2 id="mk-build-title">What builds each element, and what it still needs</h2>
+  <p id="mk-build-intro"></p>
+  <div class="mk-tbl" id="mk-build" data-comment-target data-uid="buildlist" data-label="Build list"></div>
+</div></div>
+
+<div class="mk-wrap" id="mk-panel" hidden>
+  <h2>Your comments</h2>
+  <p class="mk-foot">Kept in this browser only. Copy them as Markdown and paste them into your agent chat, then say you are done.</p>
+  <ul id="mk-list"></ul>
+  <textarea id="mk-export" readonly hidden aria-label="Comments as Markdown"></textarea>
+</div>
+
+<div id="mk-pop" hidden role="dialog" aria-label="Add a comment">
+  <div class="who" id="mk-pop-who"></div>
+  <textarea id="mk-pop-text" aria-label="Comment text"></textarea>
+  <div class="row"><button class="mk-btn" id="mk-pop-cancel" type="button">Cancel</button><button class="mk-btn primary" id="mk-pop-save" type="button">Save comment</button></div>
+</div>
+
+<script>
+/* Example content for the toolkit-mockup skill.
+   Everything here is invented: the company "Fjordly Outdoor", its regions, products and numbers.
+   Build with:  python skills/toolkit-mockup/scripts/build.py examples/fjordly-sales/content.js examples/fjordly-sales/index.html */
+window.MOCKUP = (function () {
+  /* ---- invented data (deterministic) ---- */
+  var seed = 7;
+  function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+  var DAYS = [], d0 = Date.UTC(2026, 2, 1);
+  for (var i = 0; i < 60; i++) {
+    var dow = new Date(d0 + i * 864e5).getUTCDay(), wk = (dow === 0 || dow === 6);
+    var base = i < 30 ? 46000 : 48600;
+    DAYS.push(Math.round(base * (wk ? 0.62 : 1.08) * (0.94 + rnd() * 0.12)));
+  }
+  var PREV = DAYS.slice(0, 30), CUR = DAYS.slice(30);
+  function avg(a) { return a.reduce(function (s, v) { return s + v; }, 0) / a.length; }
+  var curAvg = avg(CUR), prevAvg = avg(PREV), chg = curAvg - prevAvg, pct = chg / prevAvg * 100;
+  function k(n) { return Math.abs(n) >= 1000 ? (n / 1000).toFixed(1) + "K" : String(Math.round(n)); }
+  function sp(p) { return (p > 0 ? "+" : "") + p.toFixed(1) + "%"; }
+
+  var REGIONS = [
+    { n: "Coastal", v: 15200, p: 6.4, s: "on" }, { n: "North Fjord", v: 11800, p: 3.1, s: "on" },
+    { n: "City Centre", v: 9900, p: -4.8, s: "watch" }, { n: "Highlands", v: 6700, p: -11.2, s: "off" },
+    { n: "Inland Plains", v: 5000, p: 0.4, s: "on" }];
+  var PRODUCTS = [
+    { n: "Trail Pack 30L", v: 7400, p: 9.1, s: "on" }, { n: "Summit Jacket", v: 6900, p: -6.3, s: "watch" },
+    { n: "Camp Stove Mini", v: 5100, p: 1.2, s: "on" }, { n: "Merino Base Layer", v: 4700, p: -14.9, s: "off" },
+    { n: "Trekking Poles", v: 3300, p: 2.0, s: "on" }];
+
+  /* ---- small renderers ---- */
+  var ST = { on: ["On track", "✓", "#0F6E6E", "#fff"], watch: ["Watch", "!", "#E0A526", "#1B2733"], off: ["Off track", "!", "#C2410C", "#fff"] };
+  function chip(s) {
+    var c = ST[s];
+    return '<span style="display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 5px;border:2px solid ' + c[2] + ';border-radius:999px;background:#fff;font-weight:600;font-size:15px;white-space:nowrap"><i style="width:20px;height:20px;border-radius:50%;background:' + c[2] + ';color:' + c[3] + ';display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:700">' + c[1] + "</i>" + c[0] + "</span>";
+  }
+  function spark(w, h) {
+    var lo = 25000, hi = 62000, L = 8, R = 70, T = 10, B = 24, n = CUR.length;
+    function X(i) { return L + (w - L - R) * i / (n - 1); }
+    function Y(v) { return T + (h - T - B) * (1 - (v - lo) / (hi - lo)); }
+    var path = CUR.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
+    var ma = CUR.map(function (v, i) { var a = CUR.slice(Math.max(0, i - 6), i + 1); return avg(a); });
+    var mp = ma.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); }).join(" ");
+    var ry = Y(prevAvg);
+    return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Daily sales for 30 days with a 7-day average and the previous period average">'
+      + '<line x1="' + L + '" x2="' + (w - R) + '" y1="' + ry + '" y2="' + ry + '" stroke="#1B2733" stroke-width="2" stroke-dasharray="6 5"/>'
+      + '<text x="' + (w - R + 6) + '" y="' + (ry + 5) + '" font-size="14" fill="#1B2733">Prev ' + k(prevAvg) + "</text>"
+      + '<path d="' + path + '" fill="none" stroke="#9CC7C5" stroke-width="2"/><path d="' + mp + '" fill="none" stroke="#0F6E6E" stroke-width="4" stroke-linecap="round"/>'
+      + '<circle cx="' + X(n - 1) + '" cy="' + Y(ma[n - 1]) + '" r="6" fill="#fff" stroke="#1B2733" stroke-width="3"/>'
+      + '<text x="' + (X(n - 1) + 12) + '" y="' + (Y(ma[n - 1]) + 5) + '" font-size="14" font-weight="600" fill="#1B2733">' + k(ma[n - 1]) + "</text>"
+      + '<text x="' + L + '" y="' + (h - 4) + '" font-size="14" fill="#3F5163">30 days ago</text><text x="' + (w - R) + '" y="' + (h - 4) + '" font-size="14" fill="#3F5163" text-anchor="end">Today</text></svg>';
+  }
+  function bars(rows, w, rh) {
+    var max = Math.max.apply(null, rows.map(function (r) { return r.v; })), out = '<table style="width:100%;border-collapse:collapse;font-size:15px">';
+    rows.forEach(function (r) {
+      out += '<tr style="height:' + rh + 'px"><td style="border:0;padding:0 8px 0 0;font-weight:600;white-space:nowrap">' + r.n + '</td><td style="border:0;padding:0 8px 0 0;width:' + Math.round(w * 0.3) + 'px"><span style="display:block;height:14px;border-radius:999px;background:#0F6E6E;width:' + Math.round(100 * r.v / max) + '%"></span></td><td style="border:0;padding:0 8px 0 0;text-align:right;white-space:nowrap">' + k(r.v) + '</td><td style="border:0;padding:0 8px 0 0;text-align:right;white-space:nowrap">' + (r.p > 0 ? "▲" : "▼") + " " + sp(r.p) + "</td><td style=\"border:0;padding:0\">" + chip(r.s) + "</td></tr>";
+    });
+    return out + "</table>";
+  }
+  function vt(t, s) { return '<div style="font:500 20px/1.15 var(--mk-head)">' + t + '</div><div style="font-size:14px;color:#3F5163;margin:2px 0 8px">' + s + "</div>"; }
+  var kpiNumber = '<div style="font:500 52px/1 var(--mk-head);letter-spacing:-.02em">' + k(curAvg) + '<small style="font:500 18px var(--mk-body);margin-left:6px;color:#3F5163">sales per day</small></div>';
+  var kpiGap = '<div style="font-weight:600;font-size:16px;margin-top:6px">' + (chg > 0 ? "▲" : "▼") + " " + k(Math.abs(chg)) + " (" + sp(pct) + ') <span style="font-weight:400;color:#3F5163">against ' + k(prevAvg) + " in the previous 30 days</span></div>";
+  var status = pct > 2 ? "on" : pct < -2 ? "off" : "watch";
+
+  function header() {
+    return { id: "H1", name: "Page title", build: "Card with a dynamic title", newItem: true, x: 24, y: 20, w: 760, h: 64, flat: true,
+      html: '<div style="font:500 30px/1.05 var(--mk-head)">Sales are up ' + pct.toFixed(1) + '% per day</div><div style="font-size:15px;color:#3F5163;margin-top:6px">Fjordly Outdoor. Last 30 days against the 30 days before</div>' };
+  }
+
+  return {
+    title: "Sales Overview Mockups",
+    eyebrow: "Example for the toolkit-mockup skill",
+    intro: "<p>A fictional retailer, <b>Fjordly Outdoor</b>, with invented numbers. This page shows what the skill produces: layout variants at true pixel size, a label on every element that says what builds it, a list of decisions, a build list, and a way to comment on any part and hand the comments back to your agent.</p>",
+    notes: [
+      { title: "What is invented", html: "<p>The company, regions, products and every number. The numbers come from a small seeded generator, so they are the same on every build. In a real project this is where you put real values read from the data source.</p>" },
+      { title: "Try this", html: "<p>Press <b>Comment mode</b>, click a component and write a comment. Toggle <b>Show build labels</b> to see each element's size and position. Then press <b>Finish review</b>.</p>" }
+    ],
+    decisionsTitle: "Three things the reviewer decides",
+    decisions: [
+      "<b>Layout.</b> A keeps the KPI on top left and puts regions beside it. B gives the trend the full width. Which reads faster?",
+      "<b>Status colours.</b> Teal, amber and orange with a symbol and a word. Each status also has a word, so colour is never the only signal. Keep, or change the colours?",
+      "<b>Trend window.</b> 30 days with a 7-day average. Would 90 days be more useful for this audience?"
+    ],
+    frames: [
+      { id: "A", eyebrow: "Variant A", title: "KPI top left, regions beside it", note: "The reader sees the answer first, then where it comes from, then the detail.", w: 1280, h: 720, bg: "#E9EEF2",
+        components: [
+          header(),
+          { id: "A1", name: "KPI card", build: "Card (new) + line chart", x: 24, y: 100, w: 520, h: 300, html: function (c) { return '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:10px">' + kpiNumber + kpiGap + '</div><div style="margin-top:10px">' + chip(status) + '</div>'; } },
+          { id: "A2", name: "Regions", build: "Table with data bars", x: 568, y: 100, w: 688, h: 300, html: function () { return vt("Where it comes from", "Sales per day by region, change against the previous 30 days") + bars(REGIONS, 640, 40); } },
+          { id: "A3", name: "30-day trend", build: "Line chart with constant line", newItem: true, x: 24, y: 424, w: 640, h: 276, html: function () { return vt("Daily sales", "Pale line: daily. Dark line: 7-day average. Dashed: previous period average") + spark(604, 190); } },
+          { id: "A4", name: "Top products", build: "Table with data bars", x: 688, y: 424, w: 568, h: 276, html: function () { return vt("Top products", "Sales per day, change against the previous 30 days") + bars(PRODUCTS, 520, 36); } }
+        ] },
+      { id: "B", eyebrow: "Variant B", title: "Wide trend band, detail below", note: "The trend is the hero. Regions and products sit side by side underneath.", w: 1280, h: 720, bg: "#E9EEF2",
+        components: [
+          header(),
+          { id: "B1", name: "KPI and trend band", build: "Card (new) + line chart", newItem: true, x: 24, y: 100, w: 1232, h: 280, html: function () { return '<div style="display:flex;gap:28px;height:100%"><div style="width:400px">' + '<div style="font:500 20px/1.15 var(--mk-head)">Sales per day</div><div style="font-size:14px;color:#3F5163">Last 30 days</div><div style="margin-top:14px">' + kpiNumber + kpiGap + '</div><div style="margin-top:12px">' + chip(status) + '</div></div><div style="flex:1;border-left:2px solid #D5DCE3;padding-left:24px">' + vt("Daily sales", "7-day average against the previous period") + spark(760, 190) + "</div></div>"; } },
+          { id: "B2", name: "Regions", build: "Table with data bars", x: 24, y: 404, w: 604, h: 296, html: function () { return vt("Regions", "Sales per day and change") + bars(REGIONS, 560, 40); } },
+          { id: "B3", name: "Top products", build: "Table with data bars", x: 652, y: 404, w: 604, h: 296, html: function () { return vt("Top products", "Sales per day and change") + bars(PRODUCTS, 560, 40); } }
+        ] },
+      { id: "T", eyebrow: "Tooltip page", title: "What appears when you point at a status", note: "Small frames work too. This one is a tooltip page.", w: 520, h: 320, bg: "#E9EEF2",
+        components: [
+          { id: "T1", name: "Status tooltip", build: "Report page tooltip", x: 20, y: 28, w: 480, h: 270, html: function () { return "<div>" + chip("off") + '<span style="margin-left:10px;font-weight:600">Highlands</span></div><p style="font-size:14px;margin:12px 0 10px">Sales per day fell 11.2% against the previous 30 days. Footfall data is not yet in this model, so the reason is not shown.</p><table style="font-size:14px"><tr><th></th><th>Last 30 days</th><th>Previous 30</th></tr><tr><td>Sales per day</td><td>' + k(6700) + "</td><td>" + k(6700 / 0.888) + "</td></tr><tr><td>Days with data</td><td>30</td><td>30</td></tr></table>"; } }
+        ] }
+    ],
+    build: {
+      intro: "Each row names the visual, what it still needs and what to watch out for. Anything under \"Needs\" that is a new measure or item is a change to the model, so it needs approval first.",
+      rows: [
+        ["Page title", "Card with a dynamic title", "New measure: a title text", "Keep it short so it stays on one line"],
+        ["KPI card", "New card visual with reference labels", "Existing sales-per-day measure", "A built-in KPI visual cannot show a status word or reason"],
+        ["30-day trend", "Line chart with a constant line", "New measure: 7-day average", "Show missing days as gaps, not zero"],
+        ["Regions and products", "Table with data bars", "Existing measures", "Rank by the measure that answers the question, not by name"],
+        ["Status tooltip", "Report page tooltip", "New measure: status text", "A tooltip page needs a fixed size"]
+      ]
+    }
+  };
+})();
+
+</script>
+<script>
+/* toolkit-mockup engine.
+   Reads window.MOCKUP (see references/config.md in the skill) and renders the review page.
+   Two comment modes, chosen at load:
+   - native: the host offers a comments capability (claude.ai artifacts). Buttons open the host composer.
+   - standalone: any browser. Click to comment, keep in localStorage, export as Markdown. */
+(function () {
+  "use strict";
+  var M = window.MOCKUP || {};
+  var TITLE = M.title || document.title || "Mockup";
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function status(msg) { var el = $("#mk-status"); if (el) el.textContent = msg || ""; }
+  function chipClass(build) { return /custom|deneb|vega|d3|script/i.test(build || "") ? "custom" : ""; }
+
+  /* ---------- render ---------- */
+  function target(uid, label) { return 'data-comment-target data-uid="' + esc(uid) + '" data-label="' + esc(label) + '"'; }
+
+  function renderComp(c) {
+    var inner = typeof c.html === "function" ? c.html(c) : (c.html || "");
+    var tag = '<div class="mk-tag"><b>' + esc(c.id) + '</b> ' + esc(c.name) + ' <span>| ' + esc(c.build || "") + (c.newItem ? " | new item needed" : "") + " | " + c.w + "x" + c.h + " at " + c.x + "," + c.y + "</span></div>";
+    return '<div class="mk-comp' + (c.flat ? " flat" : "") + '" ' + target("comp:" + c.id, c.id + " " + c.name) + ' data-comp="' + esc(c.id) + '" style="left:' + c.x + "px;top:" + c.y + "px;width:" + c.w + "px;height:" + c.h + 'px">' + tag + inner + "</div>";
+  }
+
+  function renderFrames() {
+    var host = $("#mk-frames"), out = "";
+    (M.frames || []).forEach(function (f) {
+      var stage = '<div class="mk-stagewrap"><div class="mk-sizer"><div class="mk-stage" data-w="' + f.w + '" data-h="' + f.h + '" style="width:' + f.w + "px;height:" + f.h + "px;background:" + (f.bg || "var(--mk-frame-bg)") + '">' + (f.components || []).map(renderComp).join("") + "</div></div></div>";
+      var body = '<div class="mk-eyebrow">' + esc(f.eyebrow || "") + "</div><h2>" + esc(f.title || "") + "</h2>" + (f.note ? "<p>" + f.note + "</p>" : "") + stage;
+      out += '<div id="frame-' + esc(f.id) + '" class="' + (f.band ? "mk-band" : "") + '"><div class="mk-wrap wide mk-sec">' + body + "</div></div>";
+    });
+    host.innerHTML = out;
+  }
+
+  function renderExtras() {
+    var out = "";
+    (M.extras || []).forEach(function (x, i) {
+      out += '<div class="' + (x.band ? "mk-band" : "") + '"><div class="mk-wrap mk-sec"><div class="mk-eyebrow">' + esc(x.eyebrow || "") + "</div><h2>" + esc(x.title || "") + "</h2>" + (x.html || "") + "</div></div>";
+    });
+    $("#mk-extras").innerHTML = out;
+  }
+
+  function renderDecisions() {
+    var d = M.decisions || [];
+    if (!d.length) { $("#mk-decisions-band").hidden = true; return; }
+    if (M.decisionsTitle) $("#mk-decisions-title").textContent = M.decisionsTitle;
+    $("#mk-decisions").innerHTML = d.map(function (h, i) { return "<li " + target("decision:" + (i + 1), "Decision " + (i + 1)) + ">" + h + "</li>"; }).join("");
+  }
+
+  function renderBuild() {
+    var b = M.build;
+    if (!b || !b.rows) { $("#mk-build-band").hidden = true; return; }
+    if (b.title) $("#mk-build-title").textContent = b.title;
+    $("#mk-build-intro").innerHTML = b.intro || "";
+    var cols = b.cols || ["Element", "Built with", "Needs", "Watch out for"];
+    $("#mk-build").innerHTML = "<table><tr>" + cols.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("") + "</tr>" + b.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</table>";
+  }
+
+  function renderLegend() {
+    var L = M.legend || [["Built-in visual or component", ""], ["Custom or certified add-on", "custom"], ["Needs a new measure or item", "measure"]];
+    $("#mk-legend").innerHTML = L.map(function (l) { return '<span class="mk-chip ' + l[1] + '">' + esc(l[0]) + "</span>"; }).join("");
+  }
+
+  function renderHow(mode) {
+    var how = mode === "native"
+      ? "<h3>How to comment</h3><p>Open comment mode in the host bar, then click an element or select text. Or hover a component and press <b>Comment</b>. Plain comments are a queue and do not notify the agent. Press <b>Finish review</b> when you are done.</p>"
+      : "<h3>How to comment</h3><p>Press <b>Comment mode</b> in the bar, click any element and type. Comments stay in this browser. Press <b>Finish review</b> to copy them as Markdown, paste them into your agent chat and say you are done.</p>";
+    var cards = '<div class="mk-note">' + how + "</div>";
+    (M.notes || []).forEach(function (n) { cards += '<div class="mk-note"><h3>' + esc(n.title) + "</h3>" + n.html + "</div>"; });
+    $("#mk-how").innerHTML = cards;
+  }
+
+  function fit() {
+    $$(".mk-stage").forEach(function (st) {
+      var sz = st.parentNode, wr = sz.parentNode, w = +st.getAttribute("data-w"), h = +st.getAttribute("data-h");
+      var sc = Math.min(1, Math.max(0.42, wr.clientWidth / w));
+      st.style.transform = "scale(" + sc + ")";
+      sz.style.width = (w * sc) + "px"; sz.style.height = (h * sc) + "px";
+    });
+  }
+
+  function addNativeButtons() {
+    $$("[data-comment-target]").forEach(function (el) {
+      if (el.querySelector(":scope > .mk-cbtn")) return;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "mk-cbtn"; b.textContent = "Comment";
+      b.setAttribute("aria-label", "Comment on " + (el.getAttribute("data-label") || "this element"));
+      el.appendChild(b);
+    });
+  }
+
+  /* ---------- native mode ---------- */
+  function startNative(c) {
+    document.body.classList.add("mk-native");
+    addNativeButtons();
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(".mk-cbtn"); if (!b) return;
+      e.preventDefault(); e.stopPropagation();
+      var host = b.closest("[data-comment-target]"); if (!host) return;
+      c.openComposer({ element: host }).catch(function () { status("Commenting is not available right now."); });
+    });
+    $("#mk-finish").addEventListener("click", function () {
+      if (typeof c.sendToClaude !== "function" || typeof c.canSendToClaude !== "function") { status("Tell the agent in chat that you are done."); return; }
+      c.canSendToClaude().then(function (v) {
+        if (v !== "available") { status("Sending to the agent is not available here. Tell it in chat that you are done."); return; }
+        return c.anchorFor($("#mk-finish")).then(function (a) {
+          return c.sendToClaude({ anchor: a, text: "Review finished. Please read every comment thread on this page and update the mockup once." });
+        }).then(function () { status("Sent. The agent will read all comments."); });
+      }).catch(function (err) {
+        var code = err && err.code;
+        status(code === "consent_required" ? "Allow comments from this page when asked, then press again." : code === "forbidden" ? "Commenting from the page is off here. Tell the agent in chat that you are done." : "Could not send. Tell the agent in chat that you are done.");
+      });
+    });
+  }
+
+  /* ---------- standalone mode ---------- */
+  var KEY = "mockup-comments:" + TITLE, items = [], memoryOnly = false, commenting = false, pending = null;
+  function load() { try { var r = localStorage.getItem(KEY); items = r ? JSON.parse(r) : []; } catch (e) { memoryOnly = true; items = []; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) { memoryOnly = true; } }
+
+  function markdown() {
+    var groups = {}, order = [];
+    items.forEach(function (it, i) { if (!groups[it.label]) { groups[it.label] = []; order.push(it.label); } groups[it.label].push({ n: i + 1, it: it }); });
+    var md = "# Review comments: " + TITLE + "\n\n" + items.length + " comment(s). Each heading names the element the comment is about.\n";
+    order.forEach(function (l) {
+      md += "\n## " + l + "\n";
+      groups[l].forEach(function (g) { md += "- (" + g.n + ") " + g.it.text.replace(/\n+/g, " ") + "\n"; });
+    });
+    return md;
+  }
+
+  function renderPins() {
+    $$(".mk-pin").forEach(function (p) { p.parentNode.removeChild(p); });
+    items.forEach(function (it, i) {
+      var el = document.querySelector('[data-uid="' + it.uid + '"]'); if (!el) return;
+      if (getComputedStyle(el).position === "static") el.style.position = "relative";
+      var p = document.createElement("span");
+      p.className = "mk-pin"; p.textContent = String(i + 1);
+      p.style.left = (it.fx * 100) + "%"; p.style.top = (it.fy * 100) + "%";
+      el.appendChild(p);
+    });
+  }
+
+  function renderList() {
+    var ul = $("#mk-list");
+    ul.innerHTML = items.map(function (it, i) {
+      return '<li><span class="n">' + (i + 1) + '</span><div><div class="t">' + esc(it.label) + "</div>" + esc(it.text) + '</div><button class="mk-btn" type="button" data-del="' + i + '" aria-label="Delete comment ' + (i + 1) + '">Delete</button></li>';
+    }).join("");
+    var n = items.length;
+    $("#mk-copy").textContent = "Copy comments (" + n + ")";
+    $("#mk-panel").hidden = n === 0 && !$("#mk-export").value;
+  }
+
+  function closePop() { $("#mk-pop").hidden = true; pending = null; }
+  function openPop(el, e) {
+    var r = el.getBoundingClientRect();
+    pending = { uid: el.getAttribute("data-uid"), label: el.getAttribute("data-label") || el.getAttribute("data-uid"), fx: Math.min(1, Math.max(0, (e.clientX - r.left) / (r.width || 1))), fy: Math.min(1, Math.max(0, (e.clientY - r.top) / (r.height || 1))) };
+    $("#mk-pop-who").textContent = "Comment on: " + pending.label;
+    $("#mk-pop-text").value = "";
+    var pop = $("#mk-pop"); pop.hidden = false;
+    pop.style.left = Math.max(8, Math.min(e.clientX, window.innerWidth - 356)) + "px";
+    pop.style.top = Math.max(8, Math.min(e.clientY + 12, window.innerHeight - 200)) + "px";
+    $("#mk-pop-text").focus();
+  }
+  function savePop() {
+    var text = $("#mk-pop-text").value.trim();
+    if (!pending || !text) { closePop(); return; }
+    items.push({ uid: pending.uid, label: pending.label, fx: pending.fx, fy: pending.fy, text: text, at: new Date().toISOString() });
+    save(); closePop(); renderPins(); renderList();
+    status(items.length + " comment(s)" + (memoryOnly ? " (not saved in this browser: copy them before you leave)" : "") + ".");
+  }
+
+  function exportText(show) {
+    var md = markdown(), box = $("#mk-export");
+    box.value = md; if (show) { box.hidden = false; $("#mk-panel").hidden = false; box.focus(); box.select(); }
+    return md;
+  }
+  function copyAll() {
+    var md = exportText(false);
+    function fallback() { exportText(true); status("Select and copy the text in the box below."); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(function () { status("Copied " + items.length + " comment(s). Paste them into your agent chat."); }, fallback);
+    } else { fallback(); }
+  }
+
+  function startStandalone() {
+    ["#mk-mode", "#mk-copy", "#mk-dl", "#mk-clear"].forEach(function (s) { $(s).hidden = false; });
+    load(); renderPins(); renderList();
+    var modeBtn = $("#mk-mode");
+    modeBtn.addEventListener("click", function () {
+      commenting = !commenting;
+      document.body.classList.toggle("mk-commenting", commenting);
+      modeBtn.classList.toggle("on", commenting);
+      modeBtn.setAttribute("aria-pressed", String(commenting));
+      modeBtn.textContent = "Comment mode: " + (commenting ? "on" : "off");
+      if (!commenting) closePop();
+    });
+    document.addEventListener("click", function (e) {
+      if (!commenting) return;
+      if (e.target.closest("#mk-pop,.mk-toolbar,#mk-panel")) return;
+      var t = e.target.closest("[data-comment-target]"); if (!t) return;
+      e.preventDefault(); e.stopPropagation(); openPop(t, e);
+    }, true);
+    $("#mk-pop-save").addEventListener("click", savePop);
+    $("#mk-pop-cancel").addEventListener("click", closePop);
+    $("#mk-pop-text").addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closePop();
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) savePop();
+    });
+    $("#mk-list").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-del]"); if (!b) return;
+      items.splice(+b.getAttribute("data-del"), 1); save(); renderPins(); renderList();
+    });
+    $("#mk-copy").addEventListener("click", copyAll);
+    $("#mk-dl").addEventListener("click", function () {
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([markdown()], { type: "text/markdown" }));
+        a.download = "review-comments.md"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        status("Downloaded review-comments.md");
+      } catch (e) { exportText(true); status("Download is not available here. Copy the text below."); }
+    });
+    var armed = false;
+    $("#mk-clear").addEventListener("click", function () {
+      var b = $("#mk-clear");
+      if (!armed) { armed = true; b.textContent = "Click again to clear"; setTimeout(function () { armed = false; b.textContent = "Clear all"; }, 4000); return; }
+      armed = false; b.textContent = "Clear all"; items = []; save(); renderPins(); renderList(); status("Cleared.");
+    });
+    $("#mk-finish").addEventListener("click", function () {
+      if (!items.length) { status("No comments yet. Tell the agent you are done, or add comments first."); return; }
+      copyAll(); exportText(true);
+    });
+  }
+
+  /* ---------- start ---------- */
+  function detect() {
+    return new Promise(function (resolve) {
+      var cl = window.claude;
+      if (!cl || typeof cl.use !== "function") { resolve(null); return; }
+      var done = false, t = setTimeout(function () { if (!done) { done = true; resolve(null); } }, 3000);
+      try {
+        cl.use("comments").then(function (c) { if (done) return; done = true; clearTimeout(t); resolve(c && c.openComposer ? c : null); },
+          function () { if (!done) { done = true; clearTimeout(t); resolve(null); } });
+      } catch (e) { clearTimeout(t); resolve(null); }
+    });
+  }
+
+  function init() {
+    renderLegend(); renderFrames(); renderExtras(); renderDecisions(); renderBuild();
+    var tg = $("#mk-tags");
+    function tags() { document.body.classList.toggle("mk-show-tags", tg.checked); }
+    tg.addEventListener("change", tags); tags();
+    fit(); window.addEventListener("resize", fit);
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(document.body);
+    detect().then(function (c) {
+      var mode = c ? "native" : "standalone";
+      renderHow(mode);
+      if (c) startNative(c); else startStandalone();
+      document.body.setAttribute("data-mk-mode", mode);
+      document.dispatchEvent(new CustomEvent("mockup-ready", { detail: { mode: mode } }));
+    });
+  }
+
+  window.MockupEngine = { markdown: markdown, comments: function () { return items.slice(); } };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+
+</script>
